@@ -20,13 +20,21 @@ Servidor Python para Windows que permite el control remoto del PC desde disposit
 
 ## 🚀 Instalación
 
-### Opción 1: Usar el ejecutable (Recomendado)
+### Opción 1: Crear y Usar el Ejecutable (Recomendado)
 
-1. Ejecuta `dist/PCRemoteControl.exe`
-2. El servidor se iniciará automáticamente
-3. Se minimizará a la bandeja del sistema
+1. **Generar el ejecutable:**
+   Abre una terminal en la carpeta `Servidor` y ejecuta:
+   ```bash
+   pyinstaller PCRemoteControl.spec
+   ```
 
-### Opción 2: Ejecutar desde código fuente
+2. **Ejecutar:**
+   - Ve a la carpeta `dist/` creada
+   - Ejecuta `PCRemoteControl.exe`
+
+3. El servidor se iniciará automáticamente y se minimizará a la bandeja del sistema.
+
+### Opción 2: Ejecutar desde código fuente (Recomendado para desarrollo)
 
 1. Instala las dependencias:
 ```bash
@@ -42,7 +50,7 @@ python gui_app.py
 
 ### Primera vez
 
-1. Ejecuta `PCRemoteControl.exe`
+1. Inicia el servidor (desde código o ejecutable compilado)
 2. El servidor se iniciará automáticamente
 3. Aparecerá un código QR en la interfaz
 4. Escanea el código QR desde la app móvil
@@ -75,8 +83,8 @@ Servidor/
 ├── utils.py                # Utilidades (IP, PIN, etc.)
 ├── requirements.txt        # Dependencias Python
 ├── src/                    # Recursos (iconos, imágenes)
-├── dist/                   # Ejecutable compilado
-└── build/                  # Archivos de compilación
+├── dist/                   # Ejecutable compilado (no incluido en repo)
+└── build/                  # Archivos de compilación (no incluido en repo)
 ```
 
 ## 🔧 Compilar el Ejecutable
@@ -145,7 +153,7 @@ El ejecutable se generará en `dist\PCRemoteControl.exe`
 
 El servidor:
 - Detecta automáticamente la IP local
-- Usa el puerto 5000 por defecto
+- Usa el puerto **5723** por defecto
 - Si el puerto está ocupado, busca uno disponible automáticamente
 - Escucha en todas las interfaces (0.0.0.0)
 
@@ -156,7 +164,7 @@ El servidor:
 ## 🐛 Solución de Problemas
 
 ### El servidor no inicia
-- Verifica que el puerto 5000 no esté en uso
+- Verifica que el puerto 5723 no esté en uso
 - Ejecuta como administrador si es necesario
 
 ### No se puede conectar desde la app móvil

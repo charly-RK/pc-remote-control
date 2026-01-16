@@ -40,7 +40,7 @@ CONTROL_PC/
 
 ### Servidor
 1. Navega a la carpeta `Servidor`
-2. Ejecuta `PCRemoteControl.exe` (versión compilada)
+2. Ejecuta `PCRemoteControl.exe` (si ya lo has compilado)
    - O instala dependencias y ejecuta `python gui_app.py`
 
 ### App Móvil
@@ -62,7 +62,7 @@ CONTROL_PC/
 ### Servidor
 - **Iniciar con Windows**: Activa esta opción en Configuración para que el servidor se inicie automáticamente
 - **Minimizar a la bandeja**: Mantiene el servidor en segundo plano
-- **Puerto**: Por defecto 5000, se ajusta automáticamente si está ocupado
+- **Puerto**: Por defecto 5723, se ajusta automáticamente si está ocupado
 
 ### App Móvil
 - Configuración de sensibilidad del mouse
