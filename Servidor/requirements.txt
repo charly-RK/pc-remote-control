@@ -1,0 +1,13 @@
+flask==2.3.3
+flask-socketio==5.3.4
+eventlet==0.33.3
+pyautogui==0.9.54
+pynput==1.7.6
+pycaw==20230407
+pillow==10.4.0
+qrcode==7.4.2
+python-dotenv==1.0.0
+customtkinter==5.2.2
+packaging
+pywin32>=305
+pystray>=0.19.4
