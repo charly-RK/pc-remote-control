@@ -73,7 +73,6 @@ CONTROL_PC/
 
 Ver README.md en cada carpeta para instrucciones detalladas de desarrollo:
 - [Servidor/README.md](Servidor/README.md)
-- [remote_pc/README.md](remote_pc/README.md)
 
 ## 🛠️ Tecnologías
 
