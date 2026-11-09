@@ -1,0 +1,3 @@
+Follow AGENTS.md at the repository root, plus docs/ARCHITECTURE.md, docs/PROTOCOL.md and docs/PACKAGING.md.
+Code, commits and docs in English; Spanish only for end-user UI text and chat. No emojis. No AI attribution in commits.
+Respect the layer boundaries, the multi-OS adapter rules, the security rules and the Flutter structure defined there.

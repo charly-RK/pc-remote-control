@@ -173,3 +173,28 @@ Servidor/*.pyc
 Servidor/build/
 Servidor/dist/
 Servidor/*.log
+
+# PC Remote Control specifics
+# Flutter source must be tracked (the Python "lib/" rule above would otherwise hide it)
+!remote_pc/lib/
+!remote_pc/lib/**
+# Secrets and runtime state
+Servidor/server_pin.json
+server_pin.json
+# Build logs
+remote_pc/android/build_*.txt
+
+# Local copy of the original app and archive (not part of the repository)
+Nueva carpeta/
+*.zip
+
+# Flutter project files hidden by the generic patterns above (profile, Runner.xcworkspace, Icon?, *.manifest)
+!remote_pc/android/app/src/profile/
+!remote_pc/android/app/src/profile/**
+!remote_pc/ios/Runner.xcworkspace/
+!remote_pc/ios/Runner.xcworkspace/**
+!remote_pc/macos/Runner.xcworkspace/
+!remote_pc/macos/Runner.xcworkspace/**
+!remote_pc/web/icons/
+!remote_pc/web/icons/**
+!remote_pc/windows/runner/runner.exe.manifest

@@ -1,51 +1,75 @@
 # -*- mode: python ; coding: utf-8 -*-
+import os
+import sys
 
-block_cipher = None
+IS_WIN = sys.platform == 'win32'
+IS_MAC = sys.platform == 'darwin'
 
-# Hidden imports necesarios para Flask-SocketIO, eventlet y otras dependencias
 hidden_imports = [
     'engineio.async_drivers.threading',
+    'simple_websocket',
+    'zeroconf',
+    'zeroconf._utils.ipaddress',
+    'zeroconf._handlers.answers',
     'socketio',
     'engineio',
-    'dns',
-    'dns.resolver',
-    'dns.asyncresolver',
-    'dns.asyncbackend',
-    'eventlet',
-    'eventlet.hubs',
-    'eventlet.green',
-    'eventlet.greenthread',
-    'eventlet.wsgi',
     'flask',
     'flask_socketio',
     'werkzeug',
     'jinja2',
-    'win32gui',
-    'win32con',
-    'win32api',
-    'pywintypes',
-    'winreg',
-    'pystray',
-    'pystray._win32',
     'PIL',
     'PIL._tkinter_finder',
     'pyautogui',
     'pynput',
     'pynput.keyboard',
     'pynput.mouse',
-    'pycaw',
+    'pystray',
     'customtkinter',
     'qrcode',
-    'config',
-    'utils',
-    'input_detector',
-    'socket_handlers',
-    'routes',
 ]
 
+if IS_WIN:
+    hidden_imports += [
+        'win32gui',
+        'win32con',
+        'win32api',
+        'win32event',
+        'pywintypes',
+        'pythoncom',
+        'comtypes',
+        'winreg',
+        'pycaw',
+        'pystray._win32',
+        'pynput.keyboard._win32',
+        'pynput.mouse._win32',
+    ]
+elif IS_MAC:
+    hidden_imports += [
+        'pystray._darwin',
+        'pynput.keyboard._darwin',
+        'pynput.mouse._darwin',
+        'Quartz',
+        'AppKit',
+    ]
+else:
+    hidden_imports += [
+        'pystray._xorg',
+        'pystray._appindicator',
+        'pystray._gtk',
+        'pynput.keyboard._xorg',
+        'pynput.mouse._xorg',
+    ]
+
+if IS_WIN:
+    icon_path = 'src\\Logo.ico'
+elif IS_MAC:
+    icon_path = 'src/Logo.icns' if os.path.exists('src/Logo.icns') else None
+else:
+    icon_path = None
+
 a = Analysis(
-    ['gui_app.py'],
-    pathex=[],
+    ['main.py'],
+    pathex=['.'],
     binaries=[],
     datas=[('src', 'src')],
     hiddenimports=hidden_imports,
@@ -59,6 +83,7 @@ a = Analysis(
         'scipy',
         'pytest',
         'setuptools',
+        'eventlet',
     ],
     noarchive=False,
     optimize=0,
@@ -75,7 +100,7 @@ exe = EXE(
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=True,
+    upx=IS_WIN,
     upx_exclude=[],
     runtime_tmpdir=None,
     console=False,
@@ -84,5 +109,20 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='src\\Logo.ico',
+    icon=icon_path,
 )
+
+if IS_MAC:
+    app = BUNDLE(
+        exe,
+        name='PCRemoteControl.app',
+        icon=icon_path,
+        bundle_identifier='com.riskkeep.pcremotecontrol',
+        info_plist={
+            'LSUIElement': True,
+            'NSAppleEventsUsageDescription': (
+                'PC Remote Control needs automation access to control media and system actions.'
+            ),
+            'CFBundleShortVersionString': '1.0.0',
+        },
+    )

@@ -1,13 +1,19 @@
 flask==2.3.3
 flask-socketio==5.3.4
-eventlet==0.33.3
+python-socketio>=5.10
+simple-websocket>=1.0
 pyautogui==0.9.54
 pynput==1.7.6
-pycaw==20230407
-pillow==10.4.0
+pillow>=10.4
 qrcode==7.4.2
-python-dotenv==1.0.0
 customtkinter==5.2.2
-packaging
-pywin32>=305
 pystray>=0.19.4
+zeroconf>=0.130
+
+# Windows-only
+pywin32>=305; sys_platform == "win32"
+pycaw==20230407; sys_platform == "win32"
+
+# macOS-only (needed by pyautogui and pynput)
+pyobjc-framework-Quartz; sys_platform == "darwin"
+pyobjc-framework-Cocoa; sys_platform == "darwin"

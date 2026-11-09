@@ -1,93 +1,107 @@
-# 🖥️ PC Remote Control
+# PC Remote Control
 
-Sistema de control remoto de PC desde dispositivos móviles usando Flutter y Python.
+Remote control of a PC (Windows first, with macOS and Linux adapters) from mobile devices, built with Flutter and Python.
 
-## 📝 Descripción
+## Description
 
-Aplicación que permite controlar tu PC de forma remota desde un dispositivo móvil (Android/iOS). Incluye control de mouse, teclado, y otras funcionalidades de control remoto.
+Lets you control your PC remotely from a mobile device (Android/iOS). It includes mouse and keyboard control, media keys and other remote control features.
 
-## 📂 Estructura del Proyecto
+## Project Structure
 
 ```
-CONTROL_PC/
-├── Servidor/          # Servidor Python para Windows
-└── remote_pc/         # Aplicación móvil Flutter
+pc-remote-control/
+├── Servidor/          # Python server (Windows first; macOS and Linux adapters)
+├── remote_pc/         # Flutter mobile app
+└── docs/              # Architecture, protocol and packaging specs
 ```
 
-## ✨ Características
+## Features
 
-- 🖱️ Control de mouse y teclado remoto
-- 📱 Conexión mediante código QR
-- 🔐 Autenticación con PIN
-- 🎨 Interfaz moderna y responsive
-- 🚀 Inicio automático del servidor
-- 📍 Minimización a bandeja del sistema
-- 🌐 Detección automática de IP local
+- Remote touchpad, keyboard, media and system controls (shutdown, restart, lock and more, with confirmation)
+- Connection through a QR code or the PIN, paired once
+- Automatic reconnection: paired devices reconnect with a token and are found by name on the network
+- Modern, responsive interface
+- Automatic server start, hidden in the system tray
+- Keeps running in the background
+- Automatic local IP detection
 
-## 💻 Requisitos
+## Requirements
 
-### Servidor (Windows)
-- Windows 10/11
-- Python 3.13 o superior
-- Conexión a red local
+### Server
+- Windows 10/11 (macOS and Linux supported through adapters, not yet tested on real machines)
+- Python 3.11 or newer
+- Local network connection
 
-### Aplicación Móvil
-- Flutter 3.x
-- Android 5.0+ o iOS 12.0+
-- Conexión a la misma red que el servidor
+### Mobile App
+- Flutter 3.47 or newer (Dart 3.8+)
+- Android 6.0+ (API 23) or iOS 12.0+
+- Connection to the same network as the server
 
-## 🚀 Instalación Rápida
+## Quick Start
 
-### Servidor
-1. Navega a la carpeta `Servidor`
-2. Ejecuta `PCRemoteControl.exe` (si ya lo has compilado)
-   - O instala dependencias y ejecuta `python gui_app.py`
+### Server
+1. Go to the `Servidor` folder
+2. Run the installer or `PCRemoteControl.exe` (if you have already built it)
+   - Or install the dependencies (`pip install -r requirements.txt`) and run `python main.py` (`python main.py --background` starts hidden in the tray)
 
-### App Móvil
-1. Navega a la carpeta `remote_pc`
-2. Ejecuta `flutter pub get`
-3. Ejecuta `flutter run`
+### Mobile App
+1. Go to the `remote_pc` folder
+2. Run `flutter pub get`
+3. Run `flutter analyze` and `flutter test` (optional checks)
+4. Run `flutter run`, or `flutter build apk --debug` to build an APK (Gradle 8.14.3, AGP 8.11.1 and Kotlin 2.2.20 are required by Flutter 3.47; do not commit a machine-specific `org.gradle.java.home`)
 
-## 📖 Uso
+## Usage
 
-1. Inicia el servidor en tu PC
-2. El servidor se iniciará automáticamente y se minimizará a la bandeja
-3. Abre la app móvil
-4. Escanea el código QR mostrado en el servidor
-5. Ingresa el PIN si se solicita
-6. Comienza a controlar tu PC
+1. Start the server on your PC
+2. The server starts automatically and can be minimized to the tray
+3. Open the mobile app
+4. Scan the QR code shown by the server (or enter the IP, port and PIN by hand) to pair the device once
+5. Start controlling your PC. Next time the app reconnects by itself: it uses the saved token, finds the PC by name on the network if its IP changed, and retries with increasing delays if the PC is off or asleep
 
-## ⚙️ Configuración
+## Configuration
 
-### Servidor
-- **Iniciar con Windows**: Activa esta opción en Configuración para que el servidor se inicie automáticamente
-- **Minimizar a la bandeja**: Mantiene el servidor en segundo plano
-- **Puerto**: Por defecto 5723, se ajusta automáticamente si está ocupado
+### Server
+- **"Iniciar con Windows"**: enable it in the settings view so the server starts with the system
+- **"Minimizar a la bandeja"**: keeps the server running in the background
+- **Port**: 5723 by default, adjusted automatically if it is busy
+- **Firewall**: allow the port inbound on private networks (administrator rights needed once)
+- **Paired devices**: revoke a phone from the settings view
 
-### App Móvil
-- Configuración de sensibilidad del mouse
-- Opciones de conexión
-- Gestión de dispositivos guardados
+### Mobile App
+- Touchpad: tap to click, two-finger tap for right click, two-finger scroll, long press to drag
+- Settings: mouse and scroll sensitivity, natural scroll, tap to click, haptics
+- Saved PCs: connect, forget and pair again
 
-## 📚 Desarrollo
+## Development
 
-Ver README.md en cada carpeta para instrucciones detalladas de desarrollo:
+See the README.md in each folder for detailed development instructions:
 - [Servidor/README.md](Servidor/README.md)
+- [docs/PACKAGING.md](docs/PACKAGING.md)
 
-## 🛠️ Tecnologías
+Project rules and specs:
+- [AGENTS.md](AGENTS.md)
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- [docs/PROTOCOL.md](docs/PROTOCOL.md)
 
-### Servidor
-- Python 3.13
-- Flask + SocketIO
+## Technologies
+
+### Server
+- Python 3.11+
+- Flask + Socket.IO
 - CustomTkinter (GUI)
-- PyAutoGUI (Control de entrada)
+- PyAutoGUI and pynput (input control)
 
-### App Móvil
+### Mobile App
 - Flutter/Dart
-- Socket.IO Client
-- QR Code Scanner
-- Provider (State Management)
+- `socket_io_client` (Socket.IO)
+- `nsd` (mDNS discovery)
+- `mobile_scanner` (QR code scanner)
+- `flutter_secure_storage` (pairing token)
+- `flutter_background_service` and `flutter_local_notifications` (Android foreground service while connected)
+- Provider (state management)
+
+The app keeps the original hand-built interface, organised feature-first under `remote_pc/lib/` (see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)).
 
 ---
 
-**Desarrollado por RISK KEEP**
+**Developed by RISK KEEP**

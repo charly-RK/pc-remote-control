@@ -23,7 +23,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.remote_pc"
-        minSdk = 23      // requerido por flutter_local_notifications
+        minSdk = flutter.minSdkVersion      // required by mobile_scanner and flutter_secure_storage
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

@@ -1,70 +1,52 @@
+"""PC Remote Control entry point (GUI plus server)."""
+
+from __future__ import annotations
+
+import argparse
+import logging
 import sys
-import time
-from input_detector import InputDetector
 
-# Importar config primero para inicializar variables
-import config
-from utils import generate_pin, get_local_ip
+from pcremote.bootstrap import APP_NAME, configure_logging, create_context, create_platform
+from pcremote.infrastructure.os.single_instance import SingleInstance
+from pcremote.presentation.gui.app import run_gui
 
-def main():
-    # Inicializar configuración
-    app = config.create_app()
-    socketio = config.create_socketio(app)
-    
-    # Configurar variables globales
-    config.PIN_CODE = generate_pin()
-    config.SERVER_IP = get_local_ip()
-    config.start_time = time.time()
 
-    # Crear e iniciar el detector de campos de entrada
-    input_detector = InputDetector(socketio)
-    input_detector.start()
-    
-    # Configurar puerto
-    port = int(sys.argv[1]) if len(sys.argv) > 1 else 5000
-    config.SERVER_PORT = port
-    
-    # Importar y configurar handlers
-    from socket_handlers import setup_socket_handlers
-    from routes import setup_routes
-    
-    # Configurar handlers
-    setup_socket_handlers(socketio)
-    setup_routes(app)
-    
-    # Mostrar información del servidor
-    print("\n" + "="*50)
-    print("PC CONTROL SERVER")
-    print("="*50)
-    print(f"Server IP: {config.SERVER_IP}")
-    print(f"Port: {port}")
-    print(f"PIN Code: {config.PIN_CODE}")
-    print(f"QR Code URL: http://{config.SERVER_IP}:{port}/qr")
-    print(f"Status URL: http://{config.SERVER_IP}:{port}/status")
-    print("="*50)
-    print("\nWaiting for connections...")
-    print("Press Ctrl+C to stop the server\n")
-    
-    
-    # Iniciar servidor
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(prog=APP_NAME)
+    parser.add_argument("--background", action="store_true", help="start hidden in the system tray")
+    parser.add_argument(
+        "--configure-firewall", action="store_true", help="allow the app through the firewall and exit"
+    )
+    parser.add_argument("--remove-firewall", action="store_true", help="remove the firewall rule and exit")
+    return parser.parse_args(argv)
+
+
+def run_firewall_task(configure: bool) -> int:
+    """Headless task used by installers. Needs administrator rights on Windows."""
+    firewall = create_platform().firewall
+    done = firewall.configure() if configure else firewall.remove()
+    return 0 if done else 1
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
+    configure_logging()
+    logger = logging.getLogger("pcremote.main")
+
+    if args.configure_firewall or args.remove_firewall:
+        return run_firewall_task(configure=args.configure_firewall)
+
+    instance = SingleInstance(APP_NAME)
+    if not instance.acquire():
+        logger.warning("Another instance is already running; exiting")
+        return 0
     try:
-        socketio.run(
-            app,
-            host='0.0.0.0',
-            port=port,
-            debug=False,
-            use_reloader=False,
-            allow_unsafe_werkzeug=True
-        )
-    except KeyboardInterrupt:
-        print("\nServer stopped by user")
-    except Exception as e:
-        print(f"Error starting server: {e}")
-        import traceback
-        traceback.print_exc()
+        context = create_context(lambda: logger.info("Application exit requested"))
+        run_gui(context, start_hidden=args.background)
     finally:
-        # Asegurarse de detener el detector
-        input_detector.stop()
+        instance.release()
+    return 0
 
-if __name__ == '__main__':
-    main()
+
+if __name__ == "__main__":
+    sys.exit(main())

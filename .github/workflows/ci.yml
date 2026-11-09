@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    defaults:
+      run:
+        working-directory: Servidor
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            Servidor/requirements.txt
+            Servidor/requirements-dev.txt
+
+      - name: Install system packages (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y python3-tk xvfb xdotool
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Test (Linux, virtual display)
+        if: runner.os == 'Linux'
+        run: xvfb-run -a pytest -q
+
+      - name: Test
+        if: runner.os != 'Linux'
+        run: pytest -q
+
+      - name: Build executable
+        run: pyinstaller PCRemoteControl.spec --noconfirm
+
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: PCRemoteControl-${{ runner.os }}
+          path: Servidor/dist
